@@ -13,11 +13,10 @@
  */
 if (isset($_POST['submit'])) {
     $city = $_POST['name'];
-    //echo $city;
     $key = '9270baa4444aa839eaeecc0357f0837d';
-    // $city = 'Lucknow';
     $url = 'api.openweathermap.org/data/2.5/weather/?q='.$city.'&appid='.$key.'';
     //$url  = "api.openweathermap.org/data/2.5/forecast/daily?q='.$city.'&mode=xml&units=metric&cnt=7&appid='.$key.'";
+   
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
     curl_setopt($ch, CURLOPT_URL, $url); 
@@ -27,6 +26,22 @@ if (isset($_POST['submit'])) {
     // echo '<pre>';
     // print_r($result); 
     // echo '</pre>';
+    $lat = $result->coord->lat;
+    $lon = $result->coord->lon;
+    //echo $lat;
+
+    $url2 = "https://api.openweathermap.org/data/2.5/onecall?lat=".$lat."&lon=".$lon."&exclude=minutely,hourly&units=metric&appid=".$key."";
+    $ch1 = curl_init();
+    curl_setopt($ch1, CURLOPT_RETURNTRANSFER, 1); 
+    curl_setopt($ch1, CURLOPT_URL, $url2); 
+    $res1 = curl_exec($ch1); 
+    $result1 = json_decode($res1);
+    curl_close($ch1);
+    // echo '<pre>';
+    // print_r($result); 
+    // echo '</pre>';
+} else {
+    //echo "No Data Found !";
 }
 ?>
 <!DOCTYPE html>
@@ -39,6 +54,13 @@ if (isset($_POST['submit'])) {
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.22/css/jquery.dataTables.css">  
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
+    <link rel="stylesheet" type="text/css" href="/DataTables/datatables.css">
+    <script type="text/javascript" charset="utf8" src="/DataTables/datatables.js"></script>
+    
+
 </head>
 <body style="background-color:LightGray;">
     <div class="container text-center mt-5">
@@ -49,76 +71,45 @@ if (isset($_POST['submit'])) {
         </form>
     </div>
     <div class="container-fluid">
-    <table class="table table-bordered">
+    <table class="table table-bordered" id="display">
         <thead class="thead-dark">
-            <tr>
+            <tr>                          
                 <th>LONGITUDE</th>
                 <th>LATITUDE</th>
+                <th>DATE</th>    
                 <th>TEMPERATURE</th>
+                <th>PRESSURE</th>
                 <th>HUMIDITY</th>
-                <th>COUNTRY</th>
-                <th>SUNRISE</th>
-                <th>SUNSET</th>              
-                <th>CITY</th>               
+                <th>VISIBILTY</th>
+                <th>CITY</th>
+                <th>COUNTRY</th>                          
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <?php
-                if (isset($result)) {
-                    foreach ($result as $key1=>$val1) {
-                        if ($key1=="coord") {                       
-                            foreach ($val1 as $key2=>$val2) {
-                                ?>
-                                <td><?php echo $val2;?></td>
-                                <?php
-
-                            }
-                        }
-                        if ($key1=="main") {
-                            foreach ($val1 as $key2=>$val2) {
-                                if ($key2 == "temp") {
-                                    ?>
-                                    <td><?php echo ($val2-273);?></td>
-                                    <?php
-                                } 
-                                if ($key2 == "humidity") {
-                                    ?>
-                                    <td><?php echo $val2;?></td>
-                                    <?php
-                                }                                                
-                            }
-                        }
-                        if ($key1=="sys") {
-                            foreach ($val1 as $key2=>$val2) {
-                                if ($key2 == "sunrise") {
-                                    ?>
-                                    <td><?php echo $val2;?></td>
-                                    <?php
-                                } 
-                                if ($key2 == "sunset") {
-                                    ?>
-                                    <td><?php echo $val2;?></td>
-                                    <?php
-                                }
-                                if ($key2 == "country") {
-                                    ?>
-                                    <td><?php echo $val2;?></td>
-                                    <?php
-                                }                                                   
-                            }
-                        }
-                        if ($key1=="name") {
-                            ?>
-                                <td><?php echo $val1;?></td>
-                            <?php
-                        }
-                    }
+            <?php
+            if (isset($result1)) {
+                foreach ($result1->daily as $key=>$val2) {
+                    echo '<tr>';
+                    echo '<td>'.$result1->lat.'</td>';
+                    echo '<td>'.$result1->lon.'</td>';
+                    echo '<td>'.date('l F\'y, d', $val2->dt).'</td>'; 
+                    echo '<td>'.$val2->temp->max.'</td>';
+                    echo '<td>'.$val2->pressure.'</td>';
+                    echo '<td>'.$val2->humidity.'</td>';
+                    echo '<td>'.$result1->current->visibility.'</td>';
+                    echo '<td>'.$result->name.'</td>';
+                    echo '<td>'.$result->sys->country.'</td>';
+                    echo '</tr>';
                 }
-                ?>
-            </tr>
+            }            
+            ?>
         </tbody>
     </table>
     </div>
+    <script>
+    $(document).ready(function(){
+        $('#display').DataTable();
+    });
+</script>
 </body>
 </html>

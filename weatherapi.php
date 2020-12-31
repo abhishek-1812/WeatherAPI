@@ -15,7 +15,6 @@ if (isset($_POST['submit'])) {
     $city = $_POST['name'];
     $key = '9270baa4444aa839eaeecc0357f0837d';
     $url = 'api.openweathermap.org/data/2.5/weather/?q='.$city.'&appid='.$key.'';
-    //$url  = "api.openweathermap.org/data/2.5/forecast/daily?q='.$city.'&mode=xml&units=metric&cnt=7&appid='.$key.'";
    
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
@@ -23,9 +22,7 @@ if (isset($_POST['submit'])) {
     $res = curl_exec($ch); 
     $result = json_decode($res);
     curl_close($ch);
-    // echo '<pre>';
-    // print_r($result); 
-    // echo '</pre>';
+
     $lat = $result->coord->lat;
     $lon = $result->coord->lon;
     //echo $lat;
@@ -37,9 +34,7 @@ if (isset($_POST['submit'])) {
     $res1 = curl_exec($ch1); 
     $result1 = json_decode($res1);
     curl_close($ch1);
-    // echo '<pre>';
-    // print_r($result); 
-    // echo '</pre>';
+
 } else {
     //echo "No Data Found !";
 }
@@ -59,15 +54,13 @@ if (isset($_POST['submit'])) {
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.22/js/jquery.dataTables.js"></script>
     <link rel="stylesheet" type="text/css" href="/DataTables/datatables.css">
     <script type="text/javascript" charset="utf8" src="/DataTables/datatables.js"></script>
-    
-
 </head>
 <body style="background-color:LightGray;">
     <div class="container text-center mt-5">
         <h2 class="mb-5" style="color:red;text-decoration:underline;">SEE WEATHER FORECAST OF YOUR CITY</h2>
         <form class="form-group" action="" method="POST">
-            <p><input type="text" name="name" placeholder="Enter City Name"></p>
-            <input type="submit" class="btn btn-success" name="submit" value="SEE FORECAST">
+            <p><input type="text" id="nam" name="name" placeholder="Enter City Name"></p>
+            <input type="submit" class="btn btn-success" id="sub" name="submit" value="SEE FORECAST">
         </form>
     </div>
     <div class="container-fluid">
@@ -109,6 +102,14 @@ if (isset($_POST['submit'])) {
     <script>
     $(document).ready(function(){
         $('#display').DataTable();
+
+        $("#sub").click(function(){
+            var name = $("#nam").val();
+            if (name=='') {
+                alert("Please Enter Location!")
+                return false;
+            }
+        })
     });
 </script>
 </body>

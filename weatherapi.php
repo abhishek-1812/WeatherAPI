@@ -55,7 +55,7 @@ if (isset($_POST['submit'])) {
     <link rel="stylesheet" type="text/css" href="/DataTables/datatables.css">
     <script type="text/javascript" charset="utf8" src="/DataTables/datatables.js"></script>
 </head>
-<body style="background-color:LightGray;">
+<body style="background-color:LightPink;">
     <div class="container text-center mt-5">
         <h2 class="mb-5" style="color:red;text-decoration:underline;">SEE WEATHER FORECAST OF YOUR CITY</h2>
         <form class="form-group" action="" method="POST">
